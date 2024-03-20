@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Optimisation models for IF (Impact Framework)",
   "main": "build/index.js",
+  "repository": "https://github.com/GrayNekoBean/if-optimisation-plugins",
   "scripts": {
     "start": "./run.sh",
     "impact-engine": "yarn ie",
