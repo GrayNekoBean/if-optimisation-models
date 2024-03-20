@@ -7,6 +7,7 @@
     "start": "./run.sh",
     "impact-engine": "yarn ie",
     "build": "rm -rf build && tsc --project tsconfig.build.json",
+    "install-models": "./install-models.sh",
     "test": "jest --verbose"
   },
   "keywords": [
