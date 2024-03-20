@@ -28,7 +28,7 @@
       "stripInternal": false,
       "target": "ES2020",
       "composite": false,
-      
+      "esModuleInterop": true,
     },
     "include": [
       "src/**/*.ts"

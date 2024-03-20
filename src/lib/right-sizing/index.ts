@@ -8,6 +8,7 @@ import { validate, atLeastOneDefined } from '../../util/validations';
 import { InstanceData, CombinationData, CurrentData, OriginalData } from '../../types/right-sizing';
 
 import { CPUDatabase, CloudInstance } from './CPUFamily';
+import path from 'path';
 
 /**
  * Implementation of the ModelPluginInterface for the Right Sizing model.
@@ -20,9 +21,10 @@ export const RightSizingModel = (params: ConfigParams): PluginInterface => {
 
     let database: CPUDatabase = new CPUDatabase();
     const Cache: Map<string, CPUDatabase> = new Map();
-    const builtinDataPath = './data';
+    const builtinDataPath = path.join(__dirname, '../../..', 'data');
     const cpuMetrics = ['cpu-util', 'cloud-vendor', 'cloud-instance-type'];
 
+    console.log('path: ', builtinDataPath);
     /**
      * Configures the model with the provided parameters.
      * 
