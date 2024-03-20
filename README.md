@@ -22,12 +22,12 @@ The project is developed by UCL students as part of the COMP0101 module. And thi
 If you want to install this repository as a local dependency for Impact Engine Framework or other projects, you can install the package via npm:
 
 ```bash
-npm install @grnsft/if-optimisation-plugins
+npm install GrayNekoBean/if-optimisation-plugins
 ```
 
 If you want to install this repository as a global package for your node.js environment, you can install the package globally via npm:
 ```bash
-npm install -g @grnsft/if-optimisation-plugins
+npm install -g GrayNekoBean/if-optimisation-plugins
 ```
 
 # Run without Installation

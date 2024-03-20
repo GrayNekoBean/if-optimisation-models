@@ -1,0 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fixFloat = void 0;
+const fixFloat = (num, precision = 2) => {
+    return Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision);
+};
+exports.fixFloat = fixFloat;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXRpbC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy91dGlsL3V0aWwudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQ08sTUFBTSxRQUFRLEdBQUcsQ0FBQyxHQUFXLEVBQUUsWUFBb0IsQ0FBQyxFQUFVLEVBQUU7SUFDbkUsT0FBTyxJQUFJLENBQUMsS0FBSyxDQUFDLEdBQUcsR0FBRyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsRUFBRSxTQUFTLENBQUMsQ0FBQyxHQUFHLElBQUksQ0FBQyxHQUFHLENBQUMsRUFBRSxFQUFFLFNBQVMsQ0FBQyxDQUFDO0FBQy9FLENBQUMsQ0FBQztBQUZXLFFBQUEsUUFBUSxZQUVuQiIsInNvdXJjZXNDb250ZW50IjpbIlxuZXhwb3J0IGNvbnN0IGZpeEZsb2F0ID0gKG51bTogbnVtYmVyLCBwcmVjaXNpb246IG51bWJlciA9IDIpOiBudW1iZXIgPT4ge1xuICAgIHJldHVybiBNYXRoLnJvdW5kKG51bSAqIE1hdGgucG93KDEwLCBwcmVjaXNpb24pKSAvIE1hdGgucG93KDEwLCBwcmVjaXNpb24pO1xufTtcbiJdfQ==
