@@ -1,0 +1,25 @@
+name: Plotter_demo
+description: example impl invoking plotter model
+tags: null
+initialize:
+  plugins:
+    plotter:
+      method: Plotter
+      path: "@grnsft/if-optimisation-plugins"
+tree:
+  children:
+    child0:
+      defaults:
+        command: 'python3 ./scripts/plotter/plotter'
+        diagram_name: results/plots/test13_if
+        y_name: 'club rasbou'
+        colour: gold
+        x_axis_name: Type of prodcut
+        y_axis_name: Quanity in units
+        diagram_title: Alcohol and food Consuption in Club rasbou
+        graph_type: bar   
+        csv_path: '../../Code/if-optimisation-plugins/clubs.csv'
+      pipeline:
+        - plotter
+      inputs:
+      - 

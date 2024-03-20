@@ -1,0 +1,32 @@
+name: Plotter_demo
+description: example impl invoking plotter model
+tags: null
+initialize:
+  plugins:
+    plotter:
+      method: Shell
+      path: '@grnsft/if-plugins'
+      global-config:
+        command: 'python3 ./scripts/plotter/plotter'
+tree:
+  children:
+    child0:
+      defaults:
+        x-name: ['time']
+        y-name: energy
+        colour: blue
+        diagram-name: New_diagram
+        x-axis-name: Time in hours minutes and second
+        y-axis-name: Energy in KWh
+        diagram-title: time and Energy comparison
+        graph-type: bar  
+      pipeline:
+        - plotter
+      inputs:
+        - plotted-points:
+            - time: 12:00:34
+              energy: 5
+            - time: 13:01:56
+              energy: 3
+            - time: 14:20:22
+              energy: 8 

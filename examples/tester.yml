@@ -1,0 +1,26 @@
+name: sci-e-demo
+description: example impl
+tags: null
+initialize:
+  models:
+    - name: fake-model
+      kind: plugin
+      verbose: false
+      model: FakeModel
+      path: "@grnsft/if-optimisation-plugins"
+graph:
+  children:
+    child:
+      pipeline:
+        - fake-model
+      config:
+        fake-model:
+          val1: 1
+          val2: "test string"
+          val3: true
+          val4: [1, 2, 3]
+      inputs:
+        - timestamp: 2023-08-06T00:00
+          duration: 3600
+          num: 8
+          

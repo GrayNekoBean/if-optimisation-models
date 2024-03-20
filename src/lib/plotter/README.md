@@ -1,0 +1,386 @@
+
+# Plotter Model
+
+## Overview
+The Plotter model created for the Impact Engine Framework is designed to visualize data through various types of graphs such as bar, line, and scatter plots. It takes input in YAML format or csv format , defining the x and y values along with additional parameters to customize the plots.
+
+## Type 1 : Read from Impl file
+
+## Usage
+This model is typically used in a pipeline following data-enrichment models like `carbon-advisor`, which populates the `plotted-points` parameter required by Plotter. If the user prefers he can specify the `plotted-points` parameter himself in the Impl file but the main value of the model is its ability to visualize the data provided by other models of the Impact Engine Framework. The user can also specify a csv file to read the data to plot from.
+
+## Configuration
+There are three different ways to get the data to plot from :
+- The Impl file itself
+- Previous models in the pipeline
+- A csv file
+
+For each of the 3 different ways a different set of parameters is required.
+
+- Reading from Impl:
+  Required parameters include:
+  - `plotted-values`: The data points to plot, enriched by preceding models in the pipeline.
+  - `x-name`: Array of one or more attributes from `plotted-values` to form the 'x-axis'.
+  - `y-name`: A single attribute from `plotted-values` for the 'y_axis'.
+
+- Getting the data from previous models in the pipeline:
+  Required parameters include:
+  - `x-name`: Array of one or more attributes from `plotted-values` to form the 'x-axis'.
+  - `y-name`: A single attribute from `plotted-values` for the 'y_axis'.
+
+- Reading from csv file:
+  Required parameters include:
+  - `csv-path` :path to the csv file to read from
+  - `y-name`: A single row name for the csv file for the 'y_axis'.
+
+Optional parameters with defaults:
+- `colour`: Default is `light-blue`.
+- `diagram-name`: Defaults to `combinations-diagram.png`.
+- `x-axis-name`, `y-axis-name`: Axis labels, auto-generated if not provided. Default 'x-axis-name' is the 'x-name' attributes concatenated with underscore. Default 'y-axis-name' is the 'y-name' attribute.
+- `diagram-title`: Auto-generated if not provided. Default diagram-title is  'x-axis-name' vs 'y-axis-name'.
+- `graph-type`: Can be `bar`, `line`, or `scatter`. Default is `bar`.
+
+## Type 1 : Read the data from the Impl file 
+## Simple Example Impl and corresponding Ompl
+Impl:
+```yaml
+name: Plotter_demo
+description: example impl invoking plotter model
+tags: null
+initialize:
+  plugins:
+    plotter:
+      method: Plotter
+      path: "@grnsft/if-optimisation-plugins"
+tree:
+  children:
+    child0:
+      defaults:
+        command: 'python3 ./scripts/plotter/plotter'
+        x-name: ['time']
+        y-name: energy
+        colour: blue
+        diagram-name: New_diagram
+        x-axis-name: Time in hours minutes and second
+        y-axis-name: Energy in KWh
+        diagram-title: time and Energy comparison
+        graph-type: bar  
+      pipeline:
+        - plotter
+      inputs:
+        - plotted-points:
+            - time: 12:00:34
+              energy: 5
+            - time: 13:01:56
+              energy: 3
+            - time: 14:20:22
+              energy: 8 
+```
+Ompl:
+```yaml
+name: Plotter_demo
+description: example impl invoking plotter model
+tags: null
+initialize:
+  plugins:
+    plotter:
+      path: '@grnsft/if-optimisation-plugins'
+      method: Plotter
+tree:
+  children:
+    child0:
+      defaults:
+        command: python3 ./scripts/plotter/plotter
+        x-name:
+          - time
+        y-name: energy
+        colour: blue
+        diagram-name: New_diagram
+        x-axis-name: Time in hours minutes and second
+        y-axis-name: Energy in KWh
+        diagram-title: time and Energy comparison
+        graph-type: bar
+      pipeline:
+        - plotter
+      inputs:
+        - plotted-points:
+            - time: '12:00:34'
+              energy: 5
+            - time: '13:01:56'
+              energy: 3
+            - time: '14:20:22'
+              energy: 8
+      outputs:
+        - command: python3 ./scripts/plotter/plotter
+          x-name:
+            - time
+          y-name: energy
+          colour: blue
+          diagram-name: New_diagram
+          x-axis-name: Time in hours minutes and second
+          y-axis-name: Energy in KWh
+          diagram-title: time and Energy comparison
+          graph-type: bar
+          plotted-points:
+            - time: '12:00:34'
+              energy: 5
+            - time: '13:01:56'
+              energy: 3
+            - time: '14:20:22'
+              energy: 8
+          diagram: /home/jim/comp0101-ief/Code/if-optimisation-plugins/New_diagram.png
+
+```
+And we can see the following diagram being created:
+![Alt text](example1.png)
+## Type 2 : Get data from previous models in the pipeline
+## Example Pipeline with carbon-advisor for plotted points
+Impl:
+```yaml
+name: Carbon Advisor Demo
+description: Simple demo for invoking carbon-advisor model
+tags: null
+initialize:
+  plugins:
+    carbon-aware-advisor:
+      path: '@grnsft/if-optimisation-plugins'
+      method: CarbonAwareAdvisor
+      global-config:
+        allowed-locations:
+          - northeurope
+          - eastus
+          - westus
+        allowed-timeframes:
+          - 2022-06-19T14:00:00Z - 2022-06-21T19:00:00Z
+          - 2022-08-01T19:00:00Z - 2022-08-03T20:35:31Z
+          - 2024-08-01T19:00:00Z - 2024-08-03T20:35:31Z
+        sampling: 10
+    plotter:
+      path: '@grnsft/if-plugins'
+      method: Shell
+      global-config:
+        command: python3 ./scripts/plotter/plotter
+tree:
+  children:
+    child0:
+      pipeline:
+        - carbon-aware-advisor
+        - plotter
+      defaults:
+        x-name:
+          - location
+          - time
+        y-name: score
+        colour: yellow
+        diagram-name: demo
+        x-axis-name: Date and Location
+        y-axis-name: Carbon score
+        diagram-title: Carbon score in relation to time and location (ascending)
+        graph-type: bar
+      inputs:
+        - null
+      
+
+```
+Ompl:
+```yaml
+name: Carbon Advisor Demo
+description: Simple demo for invoking carbon-advisor model
+tags: null
+initialize:
+  plugins:
+    carbon-aware-advisor:
+      path: '@grnsft/if-optimisation-plugins'
+      method: CarbonAwareAdvisor
+      global-config:
+        allowed-locations:
+          - northeurope
+          - eastus
+          - westus
+        allowed-timeframes:
+          - 2022-06-19T14:00:00Z - 2022-06-21T19:00:00Z
+          - 2022-08-01T19:00:00Z - 2022-08-03T20:35:31Z
+          - 2024-08-01T19:00:00Z - 2024-08-03T20:35:31Z
+        sampling: 10
+    plotter:
+      path: '@grnsft/if-plugins'
+      method: Shell
+      global-config:
+        command: python3 ./scripts/plotter/plotter
+tree:
+  children:
+    child0:
+      pipeline:
+        - carbon-aware-advisor
+        - plotter
+      defaults:
+        x-name:
+          - location
+          - time
+        y-name: score
+        colour: yellow
+        diagram-name: demo
+        x-axis-name: Date and Location
+        y-axis-name: Carbon score
+        diagram-title: Carbon score in relation to time and location (ascending)
+        graph-type: bar
+      inputs:
+        - null
+      outputs:
+        - x-name:
+            - location
+            - time
+          y-name: score
+          colour: yellow
+          diagram-name: demo
+          x-axis-name: Date and Location
+          y-axis-name: Carbon score
+          diagram-title: Carbon score in relation to time and location (ascending)
+          graph-type: bar
+          suggestions:
+            - suggested-location: westus
+              suggested-timeframe: '2022-06-20T00:00:00+00:00'
+              suggested-score: 126
+          plotted-points:
+            - location: westus
+              time: '2022-06-20T00:00:00+00:00'
+              score: 126
+            - location: eastus
+              time: '2022-06-20T10:00:00+00:00'
+              score: 402
+            - location: westus
+              time: '2022-06-21T12:00:00+00:00'
+              score: 286
+            - location: eastus
+              time: '2022-06-19T21:00:00+00:00'
+              score: 409
+            - location: northeurope
+              time: '2022-08-02T04:00:00+00:00'
+              score: 188
+            - location: eastus
+              time: '2022-08-02T11:00:00+00:00'
+              score: 468
+            - location: northeurope
+              time: '2022-08-03T12:00:00+00:00'
+              score: 416
+            - location: westus
+              time: '2024-08-03T19:00:00.000Z'
+              score: 196.47708333333333
+            - location: northeurope
+              time: '2024-08-02T10:00:00.000Z'
+              score: 268.9604166666667
+            - location: westus
+              time: '2024-08-02T11:00:00.000Z'
+              score: 279.9770833333333
+          diagram: /home/jim/comp0101-ief/Code/if-optimisation-plugins/demo.png
+
+```
+And we can see the following diagram being created:
+![Alt text](example2.png)
+## Running
+The model reads YAML input from stdin and outputs a graph image along with updated YAML data to stdout or to the ompl file. Ensure the preceding model in the pipeline enriches the input with `plotted-values` or the user must insert them directly to the Impl file. The diagram parameter in the Ompl file shows ehere the created diagram has been saved on your local computer.
+
+
+## Type 3 : Read from csv file
+
+## Usage
+This model can also be used to plot data currently stored in csv file format. The user is rewuired to specify the `y-name` parameter in the Impl file which will be the row of the csv to plot.
+
+## Configuration
+Required parameters include:
+- `csv_path`: The csv file to read from. Give relative path compared to Code/if-optimisation-plugins directory.
+- `y-name`: One attributes  which will be the first element of a row in the csv. This row will then be plotted.\
+
+Optional parameters with defaults:
+- `colour`: Default is `light-blue`.
+- `diagram-name`: Defaults to `combinations_diagram.png`.
+- `x-axis-name`, `y-axis-name`: Axis labels, auto-generated if not provided. Default 'x-axis-name' is Carbon Date or Type. Default 'y-axis-name' is the 'y-name' attribute.
+- `diagram-title`: Auto-generated if not provided. Default diagram-title is  'x-axis-name' vs 'y-axis-name'.
+- `graph-type`: Can be `bar`, `line`, or `scatter`. Default is `bar`.
+
+## Simple Example Impl and corresponding Ompl
+Impl:
+```yaml
+name: plotter-demo2
+description: example impl invoking Plotter model
+tags: null
+initialize:
+  plugins:
+    plotter:
+      method: Shell
+      path: "@grnsft/if-plugins"
+tree:
+  children:
+    child0:
+      defaults:
+        command: 'python3 ./scripts/plotter/plotter'
+        y-name: graph.carbon
+        colour: red
+        diagram-name: ../Test_diagram2
+        x-axis-name: Date
+        y-axis-name: Carbon
+        diagram-title: Carbon Emission per Date for graph.carbon
+        graph-type: scatter   
+        csv_path: 'helper2.csv'
+      pipeline:
+        - plotter
+      inputs: 
+      -
+```
+Ompl:
+```yaml
+name: plotter-demo2
+description: example impl invoking Plotter model
+tags: null
+initialize:
+  plugins:
+    plotter:
+      path: '@grnsft/if-plugins'
+      method: Shell
+tree:
+  children:
+    child0:
+      defaults:
+        command: python3 ./scripts/plotter/plotter
+        y-name: graph.carbon
+        colour: red
+        diagram-name: ../Test_diagram2
+        x-axis-name: Date
+        y-axis-name: Carbon
+        diagram-title: Carbon Emission per Date for graph.carbon
+        graph-type: scatter
+        csv_path: helper2.csv
+      pipeline:
+        - plotter
+      inputs:
+        - null
+      outputs:
+        - command: python3 ./scripts/plotter/plotter
+          y-name: graph.carbon
+          colour: red
+          diagram-name: ../Test_diagram2
+          x-axis-name: Date
+          y-axis-name: Carbon
+          diagram-title: Carbon Emission per Date for graph.carbon
+          graph-type: scatter
+          csv_path: helper2.csv
+          diagram: >-
+            /home/jim/comp0101-ief/Code/if-optimisation-plugins/../Test_diagram2.png
+
+```
+And we can see the following diagram being created:
+![Alt text](example3.png)
+
+## Running
+The model reads YAML input  from stdin and opens the csv file specified . In the ennd it outputs a graph image along with updated YAML data to stdout or to the ompl file. Ensure that the csv file exists and is in the correct path. Also make sure that the 'y-name value' is a value in the first column of the csv. The diagram parameter in the Ompl file shows ehere the created diagram has been saved on your local computer.
+
+
+## Dependencies
+- `matplotlib`
+- `PyYAML`
+- `Pandas`
+
+Ensure these Python libraries are installed in your environment to use the Plotter model.
+
+## Contributing
+Contributions to enhance the Plotter model, such as adding more graph types or improving the input/output handling, are welcome. Please submit pull requests with your proposed changes.
