@@ -49,7 +49,7 @@ export const CarbonAwareAdvisor = (params: ConfigParams): PluginInterface => {
    */
   let supportedLocations: Set<string> = new Set();
   // Use for read from locations.json . We need to be careful when we commit to the impact framework dir for this path
-  let locationsFilePath = path.join(process.cwd(), 'data', 'locations.json');
+  let locationsFilePath = path.join(__dirname, 'locations.json');
 
 
   //flag to check if the model has sampling, the sampling value is originally set to 0
@@ -213,7 +213,7 @@ export const CarbonAwareAdvisor = (params: ConfigParams): PluginInterface => {
 
     // If we have sampling in the result we return the plotted points as well which have samples from different timeframe and locations
     if (hasSampling) {
-      results[0].plotted_points = plotted_points;
+      results[0]['plotted-points'] = plotted_points;
     }
     return results;
   }

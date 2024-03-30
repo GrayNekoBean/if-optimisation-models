@@ -56,15 +56,7 @@ export const Plotter = (globalConfig: ConfigParams): PluginInterface => {
         input,
         encoding: 'utf8',
       });
-      const outputs = loadAll(result.stdout + '\n');
-
-      // console.log("huh")
-      // console.info('Python Output:', result.stdout);
-
-      const error = result.stderr;
-      if (error) {
-        throw new Error("Python Error:\n" + error);
-      }
+      const outputs = loadAll(result.stdout);
 
       return {outputs: outputs};
     } catch (error: any) {

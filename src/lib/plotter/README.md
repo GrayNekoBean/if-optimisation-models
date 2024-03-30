@@ -4,7 +4,7 @@
 ## Overview
 The Plotter model created for the Impact Engine Framework is designed to visualize data through various types of graphs such as bar, line, and scatter plots. It takes input in YAML format or csv format , defining the x and y values along with additional parameters to customize the plots.
 
-## Type 1 : Read from Impl file
+
 
 ## Usage
 This model is typically used in a pipeline following data-enrichment models like `carbon-advisor`, which populates the `plotted-points` parameter required by Plotter. If the user prefers he can specify the `plotted-points` parameter himself in the Impl file but the main value of the model is its ability to visualize the data provided by other models of the Impact Engine Framework. The user can also specify a csv file to read the data to plot from.
@@ -50,31 +50,36 @@ tags: null
 initialize:
   plugins:
     plotter:
-      method: Plotter
-      path: "@grnsft/if-optimisation-plugins"
+      path: '@grnsft/if-plugins'
+      method: Shell
+      global-config:
+        command: python3 ./src/lib/plotter/plotter
+  outputs:
+    - yaml
+if-version: v0.3.1
 tree:
   children:
     child0:
       defaults:
-        command: 'python3 ./scripts/plotter/plotter'
-        x-name: ['time']
+        x-name:
+          - time
         y-name: energy
         colour: blue
-        diagram-name: New_diagram
+        diagram-name: diagrams/New_visualizer1
         x-axis-name: Time in hours minutes and second
         y-axis-name: Energy in KWh
         diagram-title: time and Energy comparison
-        graph-type: bar  
+        graph-type: bar
       pipeline:
         - plotter
       inputs:
         - plotted-points:
-            - time: 12:00:34
+            - time: '12:00:34'
               energy: 5
-            - time: 13:01:56
+            - time: '13:01:56'
               energy: 3
-            - time: 14:20:22
-              energy: 8 
+            - time: '14:20:22'
+              energy: 8
 ```
 Ompl:
 ```yaml
@@ -84,18 +89,22 @@ tags: null
 initialize:
   plugins:
     plotter:
-      path: '@grnsft/if-optimisation-plugins'
-      method: Plotter
+      path: '@grnsft/if-plugins'
+      method: Shell
+      global-config:
+        command: python3 ./src/lib/plotter/plotter
+  outputs:
+    - yaml
+if-version: v0.3.1
 tree:
   children:
     child0:
       defaults:
-        command: python3 ./scripts/plotter/plotter
         x-name:
           - time
         y-name: energy
         colour: blue
-        diagram-name: New_diagram
+        diagram-name: diagrams/New_visualizer1
         x-axis-name: Time in hours minutes and second
         y-axis-name: Energy in KWh
         diagram-title: time and Energy comparison
@@ -111,39 +120,40 @@ tree:
             - time: '14:20:22'
               energy: 8
       outputs:
-        - command: python3 ./scripts/plotter/plotter
-          x-name:
-            - time
-          y-name: energy
-          colour: blue
-          diagram-name: New_diagram
-          x-axis-name: Time in hours minutes and second
-          y-axis-name: Energy in KWh
-          diagram-title: time and Energy comparison
-          graph-type: bar
-          plotted-points:
+        - plotted-points:
             - time: '12:00:34'
               energy: 5
             - time: '13:01:56'
               energy: 3
             - time: '14:20:22'
               energy: 8
-          diagram: /home/jim/comp0101-ief/Code/if-optimisation-plugins/New_diagram.png
+          x-name:
+            - time
+          y-name: energy
+          colour: blue
+          diagram-name: diagrams/New_visualizer1
+          x-axis-name: Time in hours minutes and second
+          y-axis-name: Energy in KWh
+          diagram-title: time and Energy comparison
+          graph-type: bar
+          diagram: >-
+            /home/jim/comp0101-ief/Code/if-optimisation-models/diagrams/New_visualizer1.png
 
 ```
 And we can see the following diagram being created:
 ![Alt text](example1.png)
 ## Type 2 : Get data from previous models in the pipeline
 ## Example Pipeline with carbon-advisor for plotted points
+
 Impl:
 ```yaml
-name: Carbon Advisor Demo
-description: Simple demo for invoking carbon-advisor model
+name: Carbon Advisor Demo with plotter
+description: Simple demo for invoking carbon-advisor model and the plotter
 tags: null
 initialize:
   plugins:
     carbon-aware-advisor:
-      path: '@grnsft/if-optimisation-plugins'
+      path: '@grnsft/if-optimisation-models'
       method: CarbonAwareAdvisor
       global-config:
         allowed-locations:
@@ -159,7 +169,10 @@ initialize:
       path: '@grnsft/if-plugins'
       method: Shell
       global-config:
-        command: python3 ./scripts/plotter/plotter
+        command: python3 ./src/lib/plotter/plotter
+  outputs:
+    - yaml
+if-version: v0.3.1
 tree:
   children:
     child0:
@@ -170,27 +183,25 @@ tree:
         x-name:
           - location
           - time
-        y-name: score
-        colour: yellow
-        diagram-name: demo
+        y-name: rating
+        colour: green
+        diagram-name: diagrams/New_visualizer3
         x-axis-name: Date and Location
         y-axis-name: Carbon score
         diagram-title: Carbon score in relation to time and location (ascending)
-        graph-type: bar
+        graph-type: line
       inputs:
-        - null
-      
-
+        - fake: fake
 ```
 Ompl:
 ```yaml
-name: Carbon Advisor Demo
-description: Simple demo for invoking carbon-advisor model
+  name: Carbon Advisor Demo with plotter
+description: Simple demo for invoking carbon-advisor model and the plotter
 tags: null
 initialize:
   plugins:
     carbon-aware-advisor:
-      path: '@grnsft/if-optimisation-plugins'
+      path: '@grnsft/if-optimisation-models'
       method: CarbonAwareAdvisor
       global-config:
         allowed-locations:
@@ -206,7 +217,10 @@ initialize:
       path: '@grnsft/if-plugins'
       method: Shell
       global-config:
-        command: python3 ./scripts/plotter/plotter
+        command: python3 ./src/lib/plotter/plotter
+  outputs:
+    - yaml
+if-version: v0.3.1
 tree:
   children:
     child0:
@@ -217,63 +231,75 @@ tree:
         x-name:
           - location
           - time
-        y-name: score
-        colour: yellow
-        diagram-name: demo
+        y-name: rating
+        colour: green
+        diagram-name: diagrams/New_visualizer3
         x-axis-name: Date and Location
         y-axis-name: Carbon score
         diagram-title: Carbon score in relation to time and location (ascending)
-        graph-type: bar
+        graph-type: line
       inputs:
-        - null
+        - fake: fake
       outputs:
-        - x-name:
+        - fake: fake
+          x-name:
             - location
             - time
-          y-name: score
-          colour: yellow
-          diagram-name: demo
+          y-name: rating
+          colour: green
+          diagram-name: diagrams/New_visualizer3
           x-axis-name: Date and Location
           y-axis-name: Carbon score
           diagram-title: Carbon score in relation to time and location (ascending)
-          graph-type: bar
+          graph-type: line
           suggestions:
-            - suggested-location: westus
-              suggested-timeframe: '2022-06-20T00:00:00+00:00'
-              suggested-score: 126
+            - location: westus
+              time: '2022-06-20T00:00:00+00:00'
+              rating: 126
+              duration: '01:00:00'
           plotted-points:
             - location: westus
               time: '2022-06-20T00:00:00+00:00'
-              score: 126
-            - location: eastus
-              time: '2022-06-20T10:00:00+00:00'
-              score: 402
+              rating: 126
+              duration: '01:00:00'
             - location: westus
-              time: '2022-06-21T12:00:00+00:00'
-              score: 286
-            - location: eastus
-              time: '2022-06-19T21:00:00+00:00'
-              score: 409
+              time: '2022-06-21T06:00:00+00:00'
+              rating: 298
+              duration: '01:00:00'
+            - location: westus
+              time: '2022-06-20T16:00:00+00:00'
+              rating: 148
+              duration: '01:00:00'
+            - location: northeurope
+              time: '2022-06-20T10:00:00+00:00'
+              rating: 585
+              duration: '01:00:00'
             - location: northeurope
               time: '2022-08-02T04:00:00+00:00'
-              score: 188
-            - location: eastus
-              time: '2022-08-02T11:00:00+00:00'
-              score: 468
+              rating: 188
+              duration: '01:00:00'
             - location: northeurope
-              time: '2022-08-03T12:00:00+00:00'
-              score: 416
+              time: '2022-08-01T19:00:00+00:00'
+              rating: 245
+              duration: '01:00:00'
+            - location: westus
+              time: '2022-08-02T19:00:00+00:00'
+              rating: 212
+              duration: '01:00:00'
             - location: westus
               time: '2024-08-03T19:00:00.000Z'
-              score: 196.47708333333333
-            - location: northeurope
-              time: '2024-08-02T10:00:00.000Z'
-              score: 268.9604166666667
-            - location: westus
-              time: '2024-08-02T11:00:00.000Z'
-              score: 279.9770833333333
-          diagram: /home/jim/comp0101-ief/Code/if-optimisation-plugins/demo.png
-
+              rating: 186.68333333333334
+              duration: '01:00:00'
+            - location: eastus
+              time: '2024-08-03T09:00:00.000Z'
+              rating: 388.48125
+              duration: '01:00:00'
+            - location: eastus
+              time: '2024-08-02T18:00:00.000Z'
+              rating: 396.98125
+              duration: '01:00:00'
+          diagram: >-
+            /home/jim/comp0101-ief/Code/if-optimisation-models/diagrams/New_visualizer3.png
 ```
 And we can see the following diagram being created:
 ![Alt text](example2.png)
@@ -288,7 +314,7 @@ This model can also be used to plot data currently stored in csv file format. Th
 
 ## Configuration
 Required parameters include:
-- `csv_path`: The csv file to read from. Give relative path compared to Code/if-optimisation-plugins directory.
+- `csv_path`: The csv file to read from. Give relative path compared to Code/if-optimisation-models directory.
 - `y-name`: One attributes  which will be the first element of a row in the csv. This row will then be plotted.\
 
 Optional parameters with defaults:
@@ -307,25 +333,29 @@ tags: null
 initialize:
   plugins:
     plotter:
+      path: '@grnsft/if-plugins'
       method: Shell
-      path: "@grnsft/if-plugins"
+      global-config:
+        command: python3 ./src/lib/plotter/plotter
+  outputs:
+    - yaml
+if-version: v0.3.1
 tree:
   children:
     child0:
       defaults:
-        command: 'python3 ./scripts/plotter/plotter'
         y-name: graph.carbon
         colour: red
-        diagram-name: ../Test_diagram2
+        diagram-name: diagrams/New_visualiser2
         x-axis-name: Date
         y-axis-name: Carbon
         diagram-title: Carbon Emission per Date for graph.carbon
-        graph-type: scatter   
-        csv_path: 'helper2.csv'
+        graph-type: scatter
+        csv-path: csvs/helper2.csv
       pipeline:
         - plotter
-      inputs: 
-      -
+      inputs:
+        - input: inputs
 ```
 Ompl:
 ```yaml
@@ -337,35 +367,39 @@ initialize:
     plotter:
       path: '@grnsft/if-plugins'
       method: Shell
+      global-config:
+        command: python3 ./src/lib/plotter/plotter
+  outputs:
+    - yaml
+if-version: v0.3.1
 tree:
   children:
     child0:
       defaults:
-        command: python3 ./scripts/plotter/plotter
         y-name: graph.carbon
         colour: red
-        diagram-name: ../Test_diagram2
+        diagram-name: diagrams/New_visualiser2
         x-axis-name: Date
         y-axis-name: Carbon
         diagram-title: Carbon Emission per Date for graph.carbon
         graph-type: scatter
-        csv_path: helper2.csv
+        csv-path: csvs/helper2.csv
       pipeline:
         - plotter
       inputs:
-        - null
+        - input: inputs
       outputs:
-        - command: python3 ./scripts/plotter/plotter
+        - input: inputs
           y-name: graph.carbon
           colour: red
-          diagram-name: ../Test_diagram2
+          diagram-name: diagrams/New_visualiser2
           x-axis-name: Date
           y-axis-name: Carbon
           diagram-title: Carbon Emission per Date for graph.carbon
           graph-type: scatter
-          csv_path: helper2.csv
+          csv-path: csvs/helper2.csv
           diagram: >-
-            /home/jim/comp0101-ief/Code/if-optimisation-plugins/../Test_diagram2.png
+            /home/jim/comp0101-ief/Code/if-optimisation-models/diagrams/New_visualiser2.png
 
 ```
 And we can see the following diagram being created:

@@ -63,7 +63,7 @@ Based on the following section of the dataset, if the input YAML specifies `Stan
 Required parameters:
 
 - `cloud-vendor` : Virtual machines provider. Currently accepts `azure` and `aws`.
-- `cloud-instance-type` : The name of the current cloud instance. Refer to the following example or explore more instances: `Code/if-optimisation-plugins/data`.
+- `cloud-instance-type` : The name of the current cloud instance. Refer to the following example or explore more instances: `Code/if-optimisation-models/data`.
 - `cpu-util` : The percentage CPU utilization of the current virtual machines.
 - `mem-util` : The percentage RAM utilization of the current virtual machines.
 
@@ -98,7 +98,7 @@ initialize:
   models:
     - name: right-sizing-target
       model: RightSizingModel
-      path: "@grnsft/if-optimisation-plugins"
+      path: "@grnsft/if-optimisation-models"
 graph:
   children:
     child:
@@ -111,7 +111,7 @@ graph:
         - timestamp: '2023-11-02T10:35:00.000Z'
           duration: 300
           cloud-vendor: azure
-          cpu-util: 50
+          cpu-util: 75
           target-cpu-util: 100
           mem-availableGB: 0.488636416
           mem-usedGB: 0.5113635839999999
@@ -130,7 +130,7 @@ tags: null
 initialize:
   models:
     - name: right-sizing-target
-      path: '@grnsft/if-optimisation-plugins'
+      path: '@grnsft/if-optimisation-models'
       model: RightSizingModel
 graph:
   children:
@@ -144,12 +144,12 @@ graph:
         - timestamp: '2023-11-02T10:35:00.000Z'
           duration: 300
           cloud-vendor: azure
-          cpu-util: 50
+          cpu-util: 75
           target-cpu-util: 100
           mem-availableGB: 0.488636416
           mem-usedGB: 0.5113635839999999
           total-memoryGB: 32
-          mem-util: 50
+          mem-util: 75
           location: westus
           cloud-instance-type: Standard_D8a_v4
       outputs:
@@ -169,6 +169,24 @@ graph:
           old-cpu-util: 50
           old-mem-util: 50
           price-change: Price decreased by 98%
+          output-id: 2f37753f-5152-42af-8470-49f258b0cfed
+        - timestamp: '2023-11-02T10:35:00.000Z'
+          duration: 300
+          cloud-vendor: azure
+          cpu-util: 100
+          target-cpu-util: 100
+          mem-availableGB: 0.488636416
+          mem-usedGB: 0.5113635839999999
+          total-memoryGB: 8
+          mem-util: 100
+          location: westus
+          cloud-instance-type: Standard_D2a_v4
+          data-path: data/azure-instances.json
+          old-instance: Standard_D8a_v4
+          old-cpu-util: 50
+          old-mem-util: 50
+          price-change: Price decreased by 98%
+          output-id: 2f37753f-5152-42af-8470-49f258b0cfed
 ```
 
 ## Contributing
